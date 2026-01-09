@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Form Base</title>
+    <script>
+        async function send_name() {
+            const name = document.forms[0].name.value;
+
+            const response = await fetch("/form", {
+                method : "POST",
+                headers : { "Content-Type" : "application/json"},
+                body: JSON.stringify({"name" : name})
+            })
+            if(response.ok) {
+                const message = await response.text();
+                document.getElementById("message").innerHTML = message;
+            }
+
+        }
+    </script>
+</head>
+<body>
+    <h1>Compila il form</h1>
+    <form>
+        Nome: <input type="text" name="name" placeholder="Inserisci il tuo nome">
+        <input id="form_btn" type="button" value="Invia">
+    </form>
+    <script>
+        document.getElementById("form_btn").addEventListener("click", send_name);
+    </script>
+
+    <p id="message"></p>
+</body>
+</html>

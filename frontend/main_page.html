@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title }}</title>
+</head>
+<body>
+<h1>{{  page_name   }}</h1>
+{% if categories %}
+<form method="get" action="/products">
+    <p>Filtra per squadra:</p>
+    <input type="hidden" name="disponibile" value="{{ disponibilita or ''}}">
+<select name="categoria" onchange="this.form.submit()">
+        <option value="">Tutte</option>
+        {% for cat in categories %}
+            <option value="{{ cat }}" {% if cat == selected %} selected {% end %}>{{ cat }}</option>
+        {% end %}
+    </select>
+
+
+
+</form>
+{% end %}
+<br>
+<hr>
+
+{% if products %}
+    <table>
+        <tr>
+            <th>{{team1}}</th>
+            <th>{{team2}}</th>
+            <th>{{time}}</th>
+        </tr>
+        {% for mtc in matches %}
+            <tr>
+                <td>{{ mtc['team1_name'] }}</td>
+                <td>{{ prd['team2_name'] }}</td>
+                <td>{{ prd['time'] }}</td>
+                <td>
+                    <a href="/matches/{{ prd['id'] }}/edit">Modifica</a>
+                    <a href="/matches/{{ prd['id'] }}/delete" >Elimina</a>
+                </td>
+            </tr>
+        {% end %}
+    </table>
+{% else %}
+    <p>Nessuna partita registrata.</p>
+{% end %}
+</html>
