@@ -6,7 +6,7 @@ class DatabaseInterface:
         self._teams = db["teams"]
         self._matches = db["matches"]
 
-    # ---------- USERS ----------
+    # ---------- teams ----------
 
     async def get_team_by_name(self, teamName: str):
         return await self._teams.find_one({"teamName": teamName})
@@ -22,17 +22,16 @@ class DatabaseInterface:
             "players": players
         })
 
-    # TASKS
+    # matches
 
     async def get_matches_by_team(self, team_id: str):
         cursor = self._tasks.find({"team_id": ObjectId(team_id)})
         return [t async for t in cursor]
 
-    async def create_match(self, team1_id: str, team2_id: str, time: int, championship:str):
+    async def create_match(self, team1_id: str, team2_id: str, championship:str):
         return await self._tasks.insert_one({
             "team1_id": ObjectId(team1_id),
             "team2_id": ObjectId(team2_id),
-            "time":time,
             "scoreT1": 0,
             "scoreT2": 0,
             "pointsT1": 0,
@@ -41,15 +40,6 @@ class DatabaseInterface:
             "championship":championship,
             "done": False
         })
-    
-
-    async def update_match_time(self, match_id: str, time: int):
-        return await self._tasks.update_one(
-            {
-                "_id": ObjectId(match_id)
-            },
-            {"$set": {"time": str(time)}}
-        )
     
     async def update_match_scoreT1(self, match_id: str, scoreT1: int):
         return await self._tasks.update_one(

@@ -1,0 +1,24 @@
+[
+    {
+            "team1_id": "prova1",
+            "team2_id": "prova2",
+            "scoreT1": 1,
+            "scoreT2": 2,
+            "pointsT1": 0,
+            "pointsT2": 2,
+            "breaks": [],
+            "championship":"Serie A",
+            "done": true
+    },
+        {
+            "team1_id": "prova1",
+            "team2_id": "prova2",
+            "scoreT1": 1,
+            "scoreT2": 2,
+            "pointsT1": 0,
+            "pointsT2": 2,
+            "breaks": [],
+            "championship":"Serie A",
+            "done": true
+    }
+]

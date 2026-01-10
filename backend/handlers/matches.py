@@ -1,7 +1,7 @@
 import tornado.escape
 
 from backend.handlers.base import BaseHandler
-from backend.db.db import db_interface
+from db.db import db_interface
 
 
 class MatchHandler(BaseHandler):
@@ -31,7 +31,6 @@ class MatchHandler(BaseHandler):
         body = tornado.escape.json_decode(self.request.body)
         team1_id = body.get("team1_id", "").strip()
         team2_id = body.get("team2_id", "").strip()
-        time = body.get("time", "").strip()
         championship = body.get("championship", "").strip()
 
         if not team1_id:
@@ -40,13 +39,10 @@ class MatchHandler(BaseHandler):
         if not team2_id:
             return self.write_json({"error": "Squadra obbligatorio"}, 400)
         
-        if not time:
-            time=0
-        
         if not championship:
             return self.write_json({"error": "Campionato obbligatorio"}, 400)
 
-        result = await db_interface.create_match(team1_id,team2_id,time,championship)
+        result = await db_interface.create_match(team1_id,team2_id,championship)
         return self.write_json({"id": str(result.inserted_id)}, 201)
 
 
