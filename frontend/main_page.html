@@ -2,48 +2,80 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <title>{{ title }}</title>
+    <title>Sport App</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: green; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        h1 { color: #333; margin-bottom: 20px; text-align: center; }
+        .controls { background: white; padding: 15px; border-radius: 8px; margin-bottom: 20px; display: flex; gap: 10px; align-items: center; }
+        select { padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; cursor: pointer; }
+        button { padding: 8px 16px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; }
+        button:hover { background: #0056b3; }
+        #matchList { list-style: none; margin-top: 20px; }
+        .match-item { background: white; padding: 15px; margin-bottom: 10px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: all 0.3s; }
+        .match-item:hover { box-shadow: 0 4px 8px rgba(0,0,0,0.15); }
+        .match-item.done { opacity: 0.6; background: #f0f0f0; }
+        .match-info { flex: 1; }
+        .match-title { font-weight: bold; font-size: 16px; color: #333; margin-bottom: 5px; }
+        .match-details { font-size: 13px; color: #666; }
+        .match-events { margin-top: 10px; padding-top: 10px; border-top: 1px solid #eee; font-size: 12px; }
+        .event-item { display: flex; align-items: center; gap: 5px; margin-bottom: 3px; color: #555; }
+        .event-time { font-weight: bold; min-width: 30px; }
+        .match-actions { display: flex; gap: 10px; }
+        .icon-btn { background: none; border: none; cursor: pointer; font-size: 18px; color: #007bff; padding: 5px; border-radius: 4px; transition: all 0.2s; }
+        .icon-btn:hover { background: #f0f0f0; }
+        .icon-btn.delete { color: #dc3545; }
+        #emptyMessage { text-align: center; padding: 40px; color: #999; display: none; }
+
+        /* Classifica */
+        #leagueTable { width: 100%; background:white; border-radius:8px; overflow:hidden; margin-bottom:20px; }
+        #leagueTable th, #leagueTable td { padding: 8px; text-align:center; }
+        #leagueTable thead { background:#007bff; color:white; }
+        #leagueTable tbody tr { border-bottom: 1px solid #eee; }
+        #leagueTable tbody tr td:first-child { font-weight:bold; }
+    </style>
 </head>
 <body>
-<h1>{{  page_name   }}</h1>
-{% if categories %}
-<form method="get" action="/products">
-    <p>Filtra per squadra:</p>
-    <input type="hidden" name="disponibile" value="{{ disponibilita or ''}}">
-<select name="categoria" onchange="this.form.submit()">
-        <option value="">Tutte</option>
-        {% for cat in categories %}
-            <option value="{{ cat }}" {% if cat == selected %} selected {% end %}>{{ cat }}</option>
-        {% end %}
-    </select>
+<div class="container">
+    <h1>🏆Partite Sport</h1>
 
+    <!-- Filtro squadre -->
+    <div class="controls">
+        <label for="teamFilter">Filtra per squadra:</label>
+        <select id="teamFilter" onchange="filterByTeam()">
+            <option value="">Tutte le squadre</option>
+        </select>
+    </div>
 
-
-</form>
-{% end %}
-<br>
-<hr>
-
-{% if products %}
-    <table>
-        <tr>
-            <th>{{team1}}</th>
-            <th>{{team2}}</th>
-            <th>{{time}}</th>
-        </tr>
-        {% for mtc in matches %}
+    <!-- Classifica campionato -->
+    <h2 style="color:white; margin-bottom:10px;">📊 Classifica Campionato</h2>
+    <table id="leagueTable">
+        <thead>
             <tr>
-                <td>{{ mtc['team1_name'] }}</td>
-                <td>{{ prd['team2_name'] }}</td>
-                <td>{{ prd['time'] }}</td>
-                <td>
-                    <a href="/matches/{{ prd['id'] }}/edit">Modifica</a>
-                    <a href="/matches/{{ prd['id'] }}/delete" >Elimina</a>
-                </td>
+                <th>#</th>
+                <th>Squadra</th>
+                <th>Pt</th>
+                <th>GF</th>
+                <th>GS</th>
+                <th>DG</th>
             </tr>
-        {% end %}
+        </thead>
+        <tbody id="leagueBody"></tbody>
     </table>
-{% else %}
-    <p>Nessuna partita registrata.</p>
-{% end %}
+
+    <!-- Lista partite -->
+    <ul id="matchList"></ul>
+    <div id="emptyMessage">Nessuna partita registrata.</div>
+</div>
+
+<script src="/static/js/app.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        loadMatch();
+        startAutoRefresh();
+    });
+</script>
+</body>
 </html>
