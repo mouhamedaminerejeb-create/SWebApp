@@ -1,22 +1,9 @@
 import asyncio
 import json
-import os
 from pymongo import AsyncMongoClient
 
-# docker start -it mongodb mongosh
-# use sport_app_db
-# For authentication: set MONGO_USER and MONGO_PASSWORD env variables
-
 async def main():
-    mongo_user = os.getenv("MONGO_USER")
-    mongo_pass = os.getenv("MONGO_PASSWORD")
-    
-    if mongo_user and mongo_pass:
-        uri = f"mongodb://{mongo_user}:{mongo_pass}@localhost:27017"
-    else:
-        uri = "mongodb://localhost:27017"
-    
-    client = AsyncMongoClient(uri)
+    client = AsyncMongoClient("mongodb://localhost:27017")
     db = client["sport_app_db"]
     teams_collection = db["teams"]
     matches_collection = db["matches"]
@@ -53,9 +40,9 @@ async def main():
         updated_match_data.append(updated_match)
 
     print("Inserisco i match con gli ID corretti")
-    matches_result = await matches_collection.insert_many(updated_match_data)
+    #matches_result = await matches_collection.insert_many(updated_match_data)
 
-    print(f"Inseriti {len(matches_result.inserted_ids)} match.")
+    #print(f"Inseriti {len(matches_result.inserted_ids)} match.")
     print("Operazione completata")
 
     await client.close()

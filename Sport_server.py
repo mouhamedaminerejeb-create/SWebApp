@@ -31,7 +31,7 @@ async def main(shutdown_event):
     await load_matches_from_db()
     
     # Avvia il generatore di match in background
-    generator_task = asyncio.create_task(background_match_generator(shutdown_event, championship="Serie A"))
+    generator_task = asyncio.create_task(background_match_generator(shutdown_event, championship="Champions League"))
     
     # Avvia l'aggiornatore di tempo dei match in background
     time_updater_task = asyncio.create_task(background_match_time_updater(shutdown_event, interval=1))
