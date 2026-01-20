@@ -1,7 +1,6 @@
 from pymongo import AsyncMongoClient
-from .db_interface import DatabaseInterface
+from db_interface import DatabaseInterface
 import os
-
 class DBPool:
     def __init__(self):
         self.client = None

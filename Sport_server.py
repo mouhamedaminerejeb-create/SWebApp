@@ -1,15 +1,15 @@
 import asyncio
 import tornado.web
+import signal
 
-from backend.db.db import PORT
+from backend.db.db import DBPool
 from backend.handlers.matches import MatchHandler, MatchDeleteHandler
 from backend.handlers.matches_fun import background_match_generator, background_match_time_updater, load_matches_from_db
+#docker compose up
 
-
-def make_app():
-    return tornado.web.Application(
-        [
-
+def make_app(db_pool):
+    """Create the Tornado application with the shared pool"""
+    return tornado.web.Application([
             (r"/api/matches", MatchHandler),
             (r"/api/matches/([a-f0-9]{24})", MatchHandler),
             (r"/api/matches/([a-f0-9]{24})/delete", MatchDeleteHandler),
@@ -18,32 +18,30 @@ def make_app():
             (r"/", tornado.web.RedirectHandler, {"url": "/static/main_page.html"}),
         ],
         autoreload=True,
-        debug=True
-    )
+        debug=True)
 
+async def main():
+    db_pool = DBPool()
+    await db_pool.connect()
 
-async def main(shutdown_event):
-    app = make_app()
-    app.listen(PORT)
-    print(f"Server avviato su http://localhost:{PORT}")
-    
-    # Carica i match dal database all'avvio
-    await load_matches_from_db()
-    
-    # Avvia il generatore di match in background
-    generator_task = asyncio.create_task(background_match_generator(shutdown_event, championship="Champions League"))
-    
-    # Avvia l'aggiornatore di tempo dei match in background
-    time_updater_task = asyncio.create_task(background_match_time_updater(shutdown_event, interval=1))
-    
-    await shutdown_event.wait()
-    print("Chiusura server...")
+    app = make_app(db_pool)
+    app.listen(8888)
+    print("server listening on port 8888")
 
-
-if __name__ == "__main__":
     shutdown_event = asyncio.Event()
-    try:
-        asyncio.run(main(shutdown_event))
-    except KeyboardInterrupt:
+
+    def signal_handler(signum, frame):
+        print("\nshutting down server gracefully")
         shutdown_event.set()
+
+    signal.signal(signal.SIGTERM, signal_handler)
+
+    try:
+        await shutdown_event.wait()
+    finally:
+        await db_pool.close()
+        print("\nserver stopped")
+
+asyncio.run(main())
+
 

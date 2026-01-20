@@ -1,12 +1,14 @@
 import asyncio
 import json
 from pymongo import AsyncMongoClient
+from db import DBPool
 
 async def main():
-    client = AsyncMongoClient("mongodb://localhost:27017")
-    db = client["sport_app_db"]
-    teams_collection = db["teams"]
-    matches_collection = db["matches"]
+    client = DBPool()
+    await client.connect()
+    db = client.db
+    teams_collection = db.mongo_collection1
+    matches_collection = db.mongo_collection2
 
     with open("backend/db/teams.json", "r", encoding="utf-8") as f:
         team_data = json.load(f)
@@ -14,9 +16,9 @@ async def main():
     with open("backend/db/matches.json", "r", encoding="utf-8") as f:
         match_data = json.load(f)
 
-    print("Svuoto la collezione")
-    await teams_collection.delete_many({})
-    await matches_collection.delete_many({})
+    #print("Svuoto la collezione")
+    #await teams_collection.delete_many({})
+    #await matches_collection.delete_many({})
 
     print("Inserisco i team")
     teams_result = await teams_collection.insert_many(team_data)

@@ -149,9 +149,9 @@ function updateMatchElement(element, match) {
             <div class="event-item">
                 <span class="event-time">${e.time}'</span>
                 <span class="event-desc">
-                    ${e.type === 'goal' ? '<i class="fa-solid fa-futbol"></i>' : ''}
-                    ${e.type === 'fallo' ? '<i class="fa-solid fa-circle-exclamation" style="color:orange"></i>' : ''}
-                    ${e.type === 'pausa' ? '<i class="fa-solid fa-pause"></i>' : ''}
+                    ${e.type === 'goal' ? '⚽' : ''}
+                    ${e.type === 'fallo' ? '📢' : ''}
+                    ${e.type === 'pausa' ? '⏸️' : ''}
                     ${e.details}
                 </span>
             </div>

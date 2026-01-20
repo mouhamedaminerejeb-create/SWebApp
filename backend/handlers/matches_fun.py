@@ -4,7 +4,7 @@ import random
 from bson import ObjectId
 
 from backend.handlers.base import BaseHandler
-from backend.db.db import db_interface
+from backend.db import db_interface
 
 matches_cache = {}
 teams_cache = None

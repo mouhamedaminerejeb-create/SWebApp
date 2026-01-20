@@ -5,7 +5,7 @@ from bson import ObjectId
 
 from backend.handlers.base import BaseHandler
 from backend.handlers.matches_fun import matches_cache,teams_cache,is_team_in_active_match,load_matches_from_db,load_teams,background_match_generator,background_match_time_updater
-from backend.db.db import db_interface
+from backend.db import db_interface
 
 class MatchHandler(BaseHandler):
     async def get(self):
