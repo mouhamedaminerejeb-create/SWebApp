@@ -113,12 +113,14 @@ async def background_match_time_updater(shutdown_event, interval=1):
 
 async def background_match_generator(shutdown_event, championship="Serie A"):
     global teams_cache
+    print(len(teams_cache))
     print(f"Generatore di match avviato - Campionato: {championship}")
     while not shutdown_event.is_set():
         interval = random.randint(5, 20)
         try:
             if len(teams_cache) >= 2:
                 available_teams = [t for t in teams_cache if not is_team_in_active_match(str(t["_id"]))]
+                print(len(available_teams))
                 if len(available_teams) >= 2:
                     team1, team2 = random.sample(available_teams, 2)
                     try:

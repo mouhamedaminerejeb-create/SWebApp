@@ -138,10 +138,10 @@ async function loadMatch() {
         const events = [];
 
         s1.events.forEach(e =>
-            events.push({ time: e.time, text: `Gol ${match.team1_name}`, icon: "fa-futbol" })
+            events.push({ time: e.time, text: `⚽ Gol ${match.team1_name}` })
         );
         s2.events.forEach(e =>
-            events.push({ time: e.time, text: `Gol ${match.team2_name}`, icon: "fa-futbol" })
+            events.push({ time: e.time, text: `⚽ Gol ${match.team2_name}` })
         );
 
         if (match.breaks) {
@@ -151,7 +151,7 @@ async function loadMatch() {
                 events.push({
                     time,
                     text: type,
-                    icon: type === "fallo" ? "fa-circle-exclamation" : "fa-pause"
+                    icon: type === "fallo" ? "📢" : "⏸️"
                 });
             });
         }
