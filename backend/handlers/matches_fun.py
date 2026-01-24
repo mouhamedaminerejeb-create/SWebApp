@@ -4,10 +4,10 @@ import random
 from bson import ObjectId
 
 from backend.handlers.base import BaseHandler
-from backend.db import db_interface
 
 matches_cache = {}
 teams_cache = None
+db_int=None
 
 events=["goal1","goal2","fallo","pausa"]
 
@@ -18,15 +18,18 @@ def is_team_in_active_match(team_id):
                 return True
     return False
 
-async def load_teams():
+async def load_teams(DbI):
     global teams_cache
-    teams_cache = await db_interface.get_all_teams()
+    global db_int
+    db_int=DbI
+
+    teams_cache = await db_int.get_all_teams()
     return teams_cache
 
 async def load_matches_from_db():
     global matches_cache
     try:
-        all_matches = await db_interface.get_all_matches()
+        all_matches = await db_int.get_all_matches()
         matches_cache.clear()
         
         for match_db in all_matches:
@@ -34,8 +37,8 @@ async def load_matches_from_db():
             team1_id = str(match_db["team1_id"])
             team2_id = str(match_db["team2_id"])
             
-            team1_data = await db_interface.get_team_by_id(team1_id)
-            team2_data = await db_interface.get_team_by_id(team2_id)
+            team1_data = await db_int.get_team_by_id(team1_id)
+            team2_data = await db_int.get_team_by_id(team2_id)
             
             matches_cache[match_id] = {
                 "_id": match_db["_id"],
@@ -61,6 +64,7 @@ async def background_match_time_updater(shutdown_event, interval=1):
     while not shutdown_event.is_set():
         try:
             for match_id, match in matches_cache.items():
+                #print(match["done"])
                 if not match["done"]:
                     if match["time"] >= 90:
                         match["done"] = True
@@ -73,12 +77,12 @@ async def background_match_time_updater(shutdown_event, interval=1):
 
                         elif next(iter(match["scoreT1"][-1]))<next(iter(match["scoreT2"][-1])):
                             match["pointsT2"]+=2
-                        await db_interface.update_match_scoreT1(match_id,match["scoreT1"])
-                        await db_interface.update_match_scoreT2(match_id,match["scoreT2"])
-                        await db_interface.update_match_pointsT1(match_id,match["pointsT1"])
-                        await db_interface.update_match_pointsT2(match_id,match["pointsT2"])
-                        await db_interface.update_match_done(match_id, True)
-                        await db_interface.update_match_time(match_id, match["time"])
+                        await db_int.update_match_scoreT1(match_id,match["scoreT1"])
+                        await db_int.update_match_scoreT2(match_id,match["scoreT2"])
+                        await db_int.update_match_pointsT1(match_id,match["pointsT1"])
+                        await db_int.update_match_pointsT2(match_id,match["pointsT2"])
+                        await db_int.update_match_done(match_id, True)
+                        await db_int.update_match_time(match_id, match["time"])
                     else:
                         probabilita=random.randint(0,100)
                         if probabilita>=90:
@@ -110,7 +114,6 @@ async def background_match_time_updater(shutdown_event, interval=1):
 async def background_match_generator(shutdown_event, championship="Serie A"):
     global teams_cache
     print(f"Generatore di match avviato - Campionato: {championship}")
-    await load_teams()
     while not shutdown_event.is_set():
         interval = random.randint(5, 20)
         try:
@@ -119,7 +122,7 @@ async def background_match_generator(shutdown_event, championship="Serie A"):
                 if len(available_teams) >= 2:
                     team1, team2 = random.sample(available_teams, 2)
                     try:
-                        match_db = await db_interface.generate_match(
+                        match_db = await db_int.generate_match(
                             str(team1["_id"]),
                             str(team2["_id"]),
                             championship

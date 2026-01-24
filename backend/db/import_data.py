@@ -7,8 +7,9 @@ async def main():
     client = DBPool()
     await client.connect()
     db = client.db
-    teams_collection = db.mongo_collection1
-    matches_collection = db.mongo_collection2
+    teams_collection = db.teams.find("")
+    match_collection = db.matches.find("")
+    print(teams_collection)
 
     with open("backend/db/teams.json", "r", encoding="utf-8") as f:
         team_data = json.load(f)
@@ -21,7 +22,7 @@ async def main():
     #await matches_collection.delete_many({})
 
     print("Inserisco i team")
-    teams_result = await teams_collection.insert_many(team_data)
+    teams_result = await db.teams.insert_many(team_data)
     team_ids = teams_result.inserted_ids
     
     print(f"Inseriti {len(team_ids)} team")

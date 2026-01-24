@@ -3,8 +3,8 @@ from bson import ObjectId
 
 class DatabaseInterface:
     def __init__(self, db):
-        self._teams = db["teams"]
-        self._matches = db["matches"]
+        self._teams = db.teams
+        self._matches = db.matches
 
     # ---------- teams ----------
 

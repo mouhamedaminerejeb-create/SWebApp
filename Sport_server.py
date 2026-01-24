@@ -4,7 +4,7 @@ import signal
 
 from backend.db.db import DBPool
 from backend.handlers.matches import MatchHandler, MatchDeleteHandler
-from backend.handlers.matches_fun import background_match_generator, background_match_time_updater, load_matches_from_db
+from backend.handlers.matches_fun import background_match_generator, background_match_time_updater, load_teams
 #docker compose up
 
 def make_app(db_pool):
@@ -23,12 +23,17 @@ def make_app(db_pool):
 async def main():
     db_pool = DBPool()
     await db_pool.connect()
+    await load_teams(db_pool.db_inter)
+
 
     app = make_app(db_pool)
     app.listen(8888)
     print("server listening on port 8888")
 
     shutdown_event = asyncio.Event()
+
+    await background_match_generator(shutdown_event)
+    await background_match_time_updater(shutdown_event)
 
     def signal_handler(signum, frame):
         print("\nshutting down server gracefully")
